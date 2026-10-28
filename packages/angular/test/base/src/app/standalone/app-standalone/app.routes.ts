@@ -110,6 +110,14 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'swipe-back-race',
+        loadComponent: () => import('../swipe-back-race/swipe-back-race.component').then(c => c.SwipeBackRaceComponent),
+        children: [
+          { path: '', loadComponent: () => import('../swipe-back-race/swipe-back-race-main.component').then(c => c.SwipeBackRaceMainComponent) },
+          { path: 'details', loadComponent: () => import('../swipe-back-race/swipe-back-race-details.component').then(c => c.SwipeBackRaceDetailsComponent) }
+        ]
+      },
+      {
         path: 'swipe-animated-disabled',
         loadComponent: () => import('../swipe-animated-disabled/swipe-animated-disabled.component').then(c => c.SwipeAnimatedDisabledComponent),
         children: [
