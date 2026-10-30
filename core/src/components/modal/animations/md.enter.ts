@@ -14,10 +14,20 @@ const createEnterAnimation = () => {
     })
     .afterClearStyles(['pointer-events']);
 
-  const wrapperAnimation = createAnimation().keyframes([
-    { offset: 0, opacity: 0.01, transform: 'translateY(40px)' },
-    { offset: 1, opacity: 1, transform: `translateY(0px)` },
-  ]);
+  /**
+   * The wrapper animation does not fill forwards. Chromium treats an
+   * element with an applied opacity animation as a backdrop root, so
+   * keeping the finished animation applied would stop `backdrop-filter`
+   * inside the modal from seeing the page behind it. The final state is
+   * kept with inline styles instead.
+   */
+  const wrapperAnimation = createAnimation()
+    .keyframes([
+      { offset: 0, opacity: 0.01, transform: 'translateY(40px)' },
+      { offset: 1, opacity: 1, transform: `translateY(0px)` },
+    ])
+    .fill('backwards')
+    .afterStyles({ opacity: 1, transform: 'translateY(0px)' });
 
   return { backdropAnimation, wrapperAnimation, contentAnimation: undefined };
 };

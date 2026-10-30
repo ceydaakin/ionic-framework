@@ -24,10 +24,18 @@ export const createSheetEnterAnimation = (opts: ModalAnimationOptions) => {
       .afterClearStyles(['pointer-events']);
   }
 
-  const wrapperAnimation = createAnimation('wrapperAnimation').keyframes([
-    { offset: 0, opacity: 1, transform: 'translateY(100%)' },
-    { offset: 1, opacity: 1, transform: `translateY(${100 - currentBreakpoint! * 100}%)` },
-  ]);
+  /**
+   * Opacity is set with an inline style rather than animated. The sheet
+   * animation stays applied while the modal is open, and Chromium treats
+   * an element with an applied opacity animation as a backdrop root,
+   * which stops `backdrop-filter` inside the sheet from working.
+   */
+  const wrapperAnimation = createAnimation('wrapperAnimation')
+    .keyframes([
+      { offset: 0, transform: 'translateY(100%)' },
+      { offset: 1, transform: `translateY(${100 - currentBreakpoint! * 100}%)` },
+    ])
+    .beforeStyles({ opacity: 1 });
 
   /**
    * This allows the content to be scrollable at any breakpoint.
