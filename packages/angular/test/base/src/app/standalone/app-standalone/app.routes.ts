@@ -118,6 +118,13 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'overlapping-navigations',
+        loadComponent: () => import('../overlapping-navigations/overlapping-navigations.component').then(c => c.OverlappingNavigationsComponent),
+        children: [
+          { path: ':id', loadComponent: () => import('../overlapping-navigations/overlapping-navigations-page.component').then(c => c.OverlappingNavigationsPageComponent) }
+        ]
+      },
+      {
         path: 'validation',
         children: [
           { path: 'input-validation', loadComponent: () => import('../validation/input-validation/input-validation.component').then(c => c.InputValidationComponent) },

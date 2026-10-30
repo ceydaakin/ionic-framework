@@ -290,13 +290,22 @@ export class StackController {
     return Promise.resolve(false);
   }
 
-  private async wait<T>(task: () => Promise<T>): Promise<T> {
-    if (this.runningTask !== undefined) {
-      await this.runningTask;
-      this.runningTask = undefined;
-    }
-    const promise = (this.runningTask = task());
-    promise.finally(() => (this.runningTask = undefined));
+  private wait<T>(task: () => Promise<T>): Promise<T> {
+    /**
+     * Chain each task onto the last queued one so that queued
+     * transitions run one after another in the order they were
+     * requested. Awaiting the shared running task instead would start
+     * every queued task at once, and a later navigation could run
+     * before an earlier one, leaving two pages visible.
+     */
+    const previous = this.runningTask;
+    const promise = previous ? previous.catch(() => undefined).then(task) : task();
+    this.runningTask = promise;
+    promise.finally(() => {
+      if (this.runningTask === promise) {
+        this.runningTask = undefined;
+      }
+    });
     return promise;
   }
 }
